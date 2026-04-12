@@ -1,8 +1,8 @@
 package me.ifmo.backend.services;
 
 import me.ifmo.backend.entities.Enrollment;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface EnrollmentService {
 
@@ -10,7 +10,7 @@ public interface EnrollmentService {
 
     Enrollment getEnrollmentById(Long id);
 
-    List<Enrollment> getEnrollmentsByUserId(Long userId);
+    Page<Enrollment> getEnrollmentsByUserId(Long userId, Pageable pageable);
 
-    List<Enrollment> getEnrollmentsByCourseId(Long courseId);
+    Page<Enrollment> getEnrollmentsByCourseId(Long courseId, Pageable pageable);
 }
