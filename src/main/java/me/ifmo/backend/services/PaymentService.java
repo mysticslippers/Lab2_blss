@@ -9,6 +9,4 @@ public interface PaymentService {
     Payment getPaymentById(Long id);
 
     Payment getPaymentByEnrollmentId(Long enrollmentId);
-
-    Payment getPaymentByProviderPaymentId(String providerPaymentId);
 }
