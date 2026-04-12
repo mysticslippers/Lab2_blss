@@ -11,11 +11,12 @@ import me.ifmo.backend.repositories.EnrollmentRepository;
 import me.ifmo.backend.repositories.UserRepository;
 import me.ifmo.backend.services.CourseService;
 import me.ifmo.backend.services.EnrollmentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -60,13 +61,13 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Enrollment> getEnrollmentsByUserId(Long userId) {
-        return enrollmentRepository.findAllByUserId(userId);
+    public Page<Enrollment> getEnrollmentsByUserId(Long userId, Pageable pageable) {
+        return enrollmentRepository.findAllByUserId(userId, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Enrollment> getEnrollmentsByCourseId(Long courseId) {
-        return enrollmentRepository.findAllByCourseId(courseId);
+    public Page<Enrollment> getEnrollmentsByCourseId(Long courseId, Pageable pageable) {
+        return enrollmentRepository.findAllByCourseId(courseId, pageable);
     }
 }
