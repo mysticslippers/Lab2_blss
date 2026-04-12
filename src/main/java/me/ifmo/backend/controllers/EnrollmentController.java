@@ -1,18 +1,21 @@
 package me.ifmo.backend.controllers;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import me.ifmo.backend.DTO.enrollment.CreateEnrollmentRequest;
 import me.ifmo.backend.DTO.enrollment.EnrollmentDTO;
 import me.ifmo.backend.mappers.EnrollmentMapper;
 import me.ifmo.backend.services.EnrollmentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/enrollments")
+@Validated
 public class EnrollmentController {
 
     private final EnrollmentService enrollmentService;
@@ -26,17 +29,19 @@ public class EnrollmentController {
     }
 
     @GetMapping("/{id}")
-    public EnrollmentDTO getEnrollmentById(@PathVariable Long id) {
+    public EnrollmentDTO getEnrollmentById(@PathVariable @Min(1) Long id) {
         return enrollmentMapper.toEnrollmentDTO(enrollmentService.getEnrollmentById(id));
     }
 
     @GetMapping("/user/{userId}")
-    public List<EnrollmentDTO> getEnrollmentsByUserId(@PathVariable Long userId) {
-        return enrollmentMapper.toEnrollmentDTOList(enrollmentService.getEnrollmentsByUserId(userId));
+    public Page<EnrollmentDTO> getEnrollmentsByUserId(@PathVariable @Min(1) Long userId, Pageable pageable) {
+        return enrollmentService.getEnrollmentsByUserId(userId, pageable)
+                .map(enrollmentMapper::toEnrollmentDTO);
     }
 
     @GetMapping("/course/{courseId}")
-    public List<EnrollmentDTO> getEnrollmentsByCourseId(@PathVariable Long courseId) {
-        return enrollmentMapper.toEnrollmentDTOList(enrollmentService.getEnrollmentsByCourseId(courseId));
+    public Page<EnrollmentDTO> getEnrollmentsByCourseId(@PathVariable @Min(1) Long courseId, Pageable pageable) {
+        return enrollmentService.getEnrollmentsByCourseId(courseId, pageable)
+                .map(enrollmentMapper::toEnrollmentDTO);
     }
 }
