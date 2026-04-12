@@ -5,10 +5,10 @@ import me.ifmo.backend.entities.Course;
 import me.ifmo.backend.exceptions.NotFoundException;
 import me.ifmo.backend.repositories.CourseRepository;
 import me.ifmo.backend.services.CourseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,13 +18,13 @@ public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
 
     @Override
-    public List<Course> getAllCourses() {
-        return courseRepository.findAllByIsActiveTrue();
+    public Page<Course> getAllCourses(Pageable pageable) {
+        return courseRepository.findAllByIsActiveTrue(pageable);
     }
 
     @Override
-    public List<Course> getAllAvailableCourses() {
-        return courseRepository.findAllAvailableCourses();
+    public Page<Course> getAllAvailableCourses(Pageable pageable) {
+        return courseRepository.findAllAvailableCourses(pageable);
     }
 
     @Override
