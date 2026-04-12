@@ -1,7 +1,6 @@
 package me.ifmo.backend.integration.bank;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import me.ifmo.backend.exceptions.BusinessException;
 import me.ifmo.backend.integration.bank.DTO.BankPaymentRequest;
 import me.ifmo.backend.integration.bank.DTO.BankPaymentResponse;
@@ -16,7 +15,6 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class HttpBankClient implements BankClient {
 
     private final RestTemplate restTemplate;
@@ -46,20 +44,8 @@ public class HttpBankClient implements BankClient {
                 throw new BusinessException("Bank returned empty response when creating payment");
             }
 
-            log.info(
-                    "Payment created in bank: enrollmentId={}, providerPaymentId={}",
-                    request.getEnrollmentId(),
-                    body.getProviderPaymentId()
-            );
-
             return body;
         } catch (RestClientException exception) {
-            log.error(
-                    "Failed to create payment in bank for enrollmentId={}: {}",
-                    request.getEnrollmentId(),
-                    exception.getMessage(),
-                    exception
-            );
             throw new BusinessException("Failed to create payment in external bank service");
         }
     }
