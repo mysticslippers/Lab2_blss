@@ -1,14 +1,14 @@
 package me.ifmo.backend.services;
 
 import me.ifmo.backend.entities.Course;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface CourseService {
 
-    List<Course> getAllCourses();
+    Page<Course> getAllCourses(Pageable pageable);
 
-    List<Course> getAllAvailableCourses();
+    Page<Course> getAllAvailableCourses(Pageable pageable);
 
     Course getCourseById(Long id);
 
