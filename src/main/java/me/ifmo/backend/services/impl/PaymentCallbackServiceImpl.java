@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -100,43 +99,5 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
 
         enrollmentRepository.save(enrollment);
         paymentRepository.save(payment);
-    }
-
-    @Override
-    public void markExpiredPayments() {
-        LocalDateTime now = LocalDateTime.now();
-
-        log.info("markExpiredPayments started, now={}", now);
-
-        List<Payment> expiredPayments = paymentRepository.findAllByStatusInAndExpiresAtBefore(
-                List.of(PaymentStatus.CREATED, PaymentStatus.PENDING),
-                now
-        );
-
-        log.info("Expired payments found: {}", expiredPayments.size());
-
-        for (Payment payment : expiredPayments) {
-            log.info(
-                    "Expiring payment id={}, enrollmentId={}, status={}, expiresAt={}",
-                    payment.getId(),
-                    payment.getEnrollment().getId(),
-                    payment.getStatus(),
-                    payment.getExpiresAt()
-            );
-
-            payment.setStatus(PaymentStatus.EXPIRED);
-            payment.setUpdatedAt(now);
-
-            Enrollment enrollment = payment.getEnrollment();
-            if (enrollment.getStatus() == EnrollmentStatus.PENDING_PAYMENT) {
-                enrollment.setStatus(EnrollmentStatus.PAYMENT_EXPIRED);
-                enrollment.setUpdatedAt(now);
-                enrollmentRepository.save(enrollment);
-            }
-
-            paymentRepository.save(payment);
-        }
-
-        log.info("markExpiredPayments finished");
     }
 }
