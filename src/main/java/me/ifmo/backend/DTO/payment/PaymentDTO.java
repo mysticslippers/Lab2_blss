@@ -27,6 +27,4 @@ public class PaymentDTO {
     private String failureReason;
     private LocalDateTime expiresAt;
     private LocalDateTime paidAt;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }
