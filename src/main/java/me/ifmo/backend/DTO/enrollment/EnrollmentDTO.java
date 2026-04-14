@@ -23,6 +23,4 @@ public class EnrollmentDTO {
     private String rejectionReason;
     private LocalDateTime paymentExpiresAt;
     private LocalDateTime activatedAt;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }
