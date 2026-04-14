@@ -14,5 +14,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByProviderPaymentId(String providerPaymentId);
 
-    List<Payment> findAllByStatusInAndExpiresAtBefore(List<PaymentStatus> statuses, LocalDateTime time);
+    List<Payment> findTop100ByStatusInAndExpiresAtBeforeOrderByExpiresAtAsc(
+            List<PaymentStatus> statuses,
+            LocalDateTime time
+    );
 }
