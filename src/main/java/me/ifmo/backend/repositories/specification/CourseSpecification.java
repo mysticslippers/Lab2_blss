@@ -7,8 +7,7 @@ import java.math.BigDecimal;
 
 public final class CourseSpecification {
 
-    private CourseSpecification() {
-    }
+    private CourseSpecification() {}
 
     public static Specification<Course> hasTitle(String title) {
         return (root, query, criteriaBuilder) -> {
