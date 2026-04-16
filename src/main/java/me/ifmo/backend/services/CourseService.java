@@ -4,11 +4,18 @@ import me.ifmo.backend.entities.Course;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.math.BigDecimal;
+
 public interface CourseService {
 
-    Page<Course> getAllCourses(Pageable pageable);
-
-    Page<Course> getAllAvailableCourses(Pageable pageable);
+    Page<Course> getCourses(
+            String title,
+            BigDecimal minPrice,
+            BigDecimal maxPrice,
+            Boolean isActive,
+            Boolean onlyAvailable,
+            Pageable pageable
+    );
 
     Course getCourseById(Long id);
 
