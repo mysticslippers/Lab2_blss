@@ -6,7 +6,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface EnrollmentService {
 
-    Enrollment createEnrollment(Long userId, Long courseId);
+    Enrollment createEnrollment(String userEmail, Long courseId);
+
+    Enrollment createEnrollmentForUser(Long userId, Long courseId);
 
     Enrollment getEnrollmentById(Long id);
 
