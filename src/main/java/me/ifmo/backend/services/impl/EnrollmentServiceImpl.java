@@ -28,28 +28,19 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     private final CourseService courseService;
 
     @Override
-    public Enrollment createEnrollment(Long userId, Long courseId) {
+    public Enrollment createEnrollment(String userEmail, Long courseId) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new NotFoundException("User with email " + userEmail + " not found"));
+
+        return createEnrollmentInternal(user, courseId);
+    }
+
+    @Override
+    public Enrollment createEnrollmentForUser(Long userId, Long courseId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User with id " + userId + " not found"));
 
-        Course course = courseService.getCourseById(courseId);
-
-        if (!courseService.isCourseAvailableForEnrollment(courseId)) {
-            throw new BusinessException("Course with id " + courseId + " is not available for enrollment");
-        }
-
-        LocalDateTime now = LocalDateTime.now();
-
-        Enrollment enrollment = Enrollment.builder()
-                .user(user)
-                .course(course)
-                .status(EnrollmentStatus.PENDING_PAYMENT)
-                .createdAt(now)
-                .updatedAt(now)
-                .paymentExpiresAt(now.plusMinutes(15))
-                .build();
-
-        return enrollmentRepository.save(enrollment);
+        return createEnrollmentInternal(user, courseId);
     }
 
     @Override
@@ -69,5 +60,26 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Transactional(readOnly = true)
     public Page<Enrollment> getEnrollmentsByCourseId(Long courseId, Pageable pageable) {
         return enrollmentRepository.findAllByCourseId(courseId, pageable);
+    }
+
+    private Enrollment createEnrollmentInternal(User user, Long courseId) {
+        Course course = courseService.getCourseById(courseId);
+
+        if (!courseService.isCourseAvailableForEnrollment(courseId)) {
+            throw new BusinessException("Course with id " + courseId + " is not available for enrollment");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        Enrollment enrollment = Enrollment.builder()
+                .user(user)
+                .course(course)
+                .status(EnrollmentStatus.PENDING_PAYMENT)
+                .createdAt(now)
+                .updatedAt(now)
+                .paymentExpiresAt(now.plusMinutes(15))
+                .build();
+
+        return enrollmentRepository.save(enrollment);
     }
 }
