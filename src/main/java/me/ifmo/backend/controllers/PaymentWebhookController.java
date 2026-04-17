@@ -6,6 +6,7 @@ import me.ifmo.backend.DTO.payment.PaymentWebhookRequest;
 import me.ifmo.backend.exceptions.BusinessException;
 import me.ifmo.backend.services.PaymentCallbackService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class PaymentWebhookController {
     private final PaymentCallbackService paymentCallbackService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('PAYMENT_CALLBACK_HANDLE')")
     public ResponseEntity<Void> handlePaymentWebhook(@RequestBody @Valid PaymentWebhookRequest request) {
         String status = request.getStatus().trim().toUpperCase();
 
