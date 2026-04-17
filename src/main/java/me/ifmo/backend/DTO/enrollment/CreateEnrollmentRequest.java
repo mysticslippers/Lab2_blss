@@ -15,10 +15,6 @@ import lombok.Setter;
 @Builder
 public class CreateEnrollmentRequest {
 
-    @NotNull(message = "User id must not be null")
-    @Min(value = 1, message = "User id must be greater than or equal to 1")
-    private Long userId;
-
     @NotNull(message = "Course id must not be null")
     @Min(value = 1, message = "Course id must be greater than or equal to 1")
     private Long courseId;
