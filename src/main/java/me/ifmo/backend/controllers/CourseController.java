@@ -8,15 +8,17 @@ import me.ifmo.backend.mappers.CourseMapper;
 import me.ifmo.backend.services.CourseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/courses")
-@Validated
+@PreAuthorize("hasAuthority('COURSE_READ')")
 public class CourseController {
 
     private final CourseService courseService;
