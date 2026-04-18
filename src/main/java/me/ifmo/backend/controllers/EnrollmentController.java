@@ -26,8 +26,7 @@ public class EnrollmentController {
 
     @PostMapping
     @PreAuthorize("hasAuthority('ENROLLMENT_CREATE')")
-    public EnrollmentDTO createEnrollment(@RequestBody @Valid CreateEnrollmentRequest request,
-                                          Authentication authentication) {
+    public EnrollmentDTO createEnrollment(@RequestBody @Valid CreateEnrollmentRequest request, Authentication authentication) {
         return enrollmentMapper.toEnrollmentDTO(
                 enrollmentService.createEnrollment(authentication.getName(), request.getCourseId())
         );
