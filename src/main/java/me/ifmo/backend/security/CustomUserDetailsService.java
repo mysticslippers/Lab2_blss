@@ -22,13 +22,21 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class CustomUserDetailsService implements UserDetailsService {
 
+    private static final String ROLE_PREFIX = "ROLE_";
+
     private final UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(username)
+        String normalizedUsername = normalize(username);
+
+        if (normalizedUsername == null) {
+            throw new UsernameNotFoundException("Username must not be blank");
+        }
+
+        User user = userRepository.findByEmail(normalizedUsername)
                 .orElseThrow(() -> new UsernameNotFoundException(
-                        "User with email " + username + " not found"
+                        "User with email " + normalizedUsername + " not found"
                 ));
 
         return org.springframework.security.core.userdetails.User.builder()
@@ -44,24 +52,56 @@ public class CustomUserDetailsService implements UserDetailsService {
     private Collection<? extends GrantedAuthority> getAuthorities(User user) {
         Set<GrantedAuthority> authorities = new HashSet<>();
 
-        if (user.getRoles() == null) {
+        if (user.getRoles() == null || user.getRoles().isEmpty()) {
             return authorities;
         }
 
         for (Role role : user.getRoles()) {
-            if (role.getName() != null && !role.getName().isBlank()) {
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + role.getName()));
-            }
-
-            if (role.getPrivileges() != null) {
-                for (Privilege privilege : role.getPrivileges()) {
-                    if (privilege.getName() != null && !privilege.getName().isBlank()) {
-                        authorities.add(new SimpleGrantedAuthority(privilege.getName()));
-                    }
-                }
-            }
+            addRoleAuthority(authorities, role);
+            addPrivilegeAuthorities(authorities, role);
         }
 
         return authorities;
+    }
+
+    private void addRoleAuthority(Set<GrantedAuthority> authorities, Role role) {
+        if (role == null) {
+            return;
+        }
+
+        String roleName = normalize(role.getName());
+        if (roleName == null) {
+            return;
+        }
+
+        authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + roleName));
+    }
+
+    private void addPrivilegeAuthorities(Set<GrantedAuthority> authorities, Role role) {
+        if (role == null || role.getPrivileges() == null || role.getPrivileges().isEmpty()) {
+            return;
+        }
+
+        for (Privilege privilege : role.getPrivileges()) {
+            if (privilege == null) {
+                continue;
+            }
+
+            String privilegeName = normalize(privilege.getName());
+            if (privilegeName == null) {
+                continue;
+            }
+
+            authorities.add(new SimpleGrantedAuthority(privilegeName));
+        }
+    }
+
+    private String normalize(String value) {
+        if (value == null) {
+            return null;
+        }
+
+        String trimmed = value.trim();
+        return trimmed.isEmpty() ? null : trimmed;
     }
 }
