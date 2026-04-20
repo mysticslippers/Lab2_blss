@@ -18,11 +18,16 @@ import java.util.Set;
 @Component
 public class KeycloakJwtAuthConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
+    private static final String CLIENT_ID = "backend-api";
+    private static final String ROLE_PREFIX = "ROLE_";
+
+    @NonNull
     @Override
     public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
-        Collection<GrantedAuthority> authorities = new HashSet<>();
+        Set<GrantedAuthority> authorities = new HashSet<>();
 
         authorities.addAll(extractRealmRoles(jwt));
+        authorities.addAll(extractClientRoles(jwt));
         authorities.addAll(extractPrivilegeClaims(jwt));
 
         String principalName = jwt.getClaimAsString("preferred_username");
@@ -48,7 +53,36 @@ public class KeycloakJwtAuthConverter implements Converter<Jwt, AbstractAuthenti
 
         for (Object role : roles) {
             if (role instanceof String roleName && !roleName.isBlank()) {
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + roleName.trim().toUpperCase()));
+                authorities.add(new SimpleGrantedAuthority(
+                        ROLE_PREFIX + roleName.trim().toUpperCase()
+                ));
+            }
+        }
+
+        return authorities;
+    }
+
+    private Collection<? extends GrantedAuthority> extractClientRoles(Jwt jwt) {
+        Object resourceAccessObject = jwt.getClaim("resource_access");
+        if (!(resourceAccessObject instanceof Map<?, ?> resourceAccess)) {
+            return Collections.emptySet();
+        }
+
+        Object clientAccessObject = resourceAccess.get(CLIENT_ID);
+        if (!(clientAccessObject instanceof Map<?, ?> clientAccess)) {
+            return Collections.emptySet();
+        }
+
+        Object rolesObject = clientAccess.get("roles");
+        if (!(rolesObject instanceof Collection<?> roles)) {
+            return Collections.emptySet();
+        }
+
+        Set<GrantedAuthority> authorities = new HashSet<>();
+
+        for (Object role : roles) {
+            if (role instanceof String roleName && !roleName.isBlank()) {
+                authorities.add(new SimpleGrantedAuthority(roleName.trim()));
             }
         }
 
