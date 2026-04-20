@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
 
@@ -48,6 +47,10 @@ public class PaymentServiceImpl implements PaymentService {
             throw new BusinessException(
                     "Payment can only be created for enrollment in PENDING_PAYMENT status"
             );
+        }
+
+        if (enrollment.getCourse() == null) {
+            throw new BusinessException("Enrollment must be linked to a course");
         }
 
         BankPaymentRequest bankPaymentRequest = BankPaymentRequest.builder()
@@ -78,7 +81,6 @@ public class PaymentServiceImpl implements PaymentService {
         enrollment.setUpdatedAt(now);
 
         enrollmentRepository.save(enrollment);
-
         return paymentRepository.save(payment);
     }
 
@@ -99,5 +101,4 @@ public class PaymentServiceImpl implements PaymentService {
                         "Payment for enrollment with id " + enrollmentId + " not found"
                 ));
     }
-
 }
