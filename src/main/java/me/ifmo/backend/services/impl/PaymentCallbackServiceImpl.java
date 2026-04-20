@@ -9,22 +9,22 @@ import me.ifmo.backend.entities.enums.EnrollmentStatus;
 import me.ifmo.backend.entities.enums.PaymentStatus;
 import me.ifmo.backend.exceptions.BusinessException;
 import me.ifmo.backend.exceptions.NotFoundException;
+import me.ifmo.backend.repositories.CourseRepository;
 import me.ifmo.backend.repositories.EnrollmentRepository;
 import me.ifmo.backend.repositories.PaymentRepository;
 import me.ifmo.backend.services.PaymentCallbackService;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
-@Slf4j
 public class PaymentCallbackServiceImpl implements PaymentCallbackService {
 
     private final PaymentRepository paymentRepository;
     private final EnrollmentRepository enrollmentRepository;
+    private final CourseRepository courseRepository;
 
     @Override
     public void markPaymentAsPaid(String providerPaymentId) {
@@ -65,6 +65,7 @@ public class PaymentCallbackServiceImpl implements PaymentCallbackService {
         course.setAvailablePlaces(course.getAvailablePlaces() - 1);
         course.setUpdatedAt(now);
 
+        courseRepository.save(course);
         enrollmentRepository.save(enrollment);
         paymentRepository.save(payment);
     }
