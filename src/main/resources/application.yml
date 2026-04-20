@@ -56,7 +56,6 @@ spring:
 
 atomikos:
   properties:
-    service: application-tm
     max-timeout: 300000
     default-jta-timeout: 30000
     log-base-dir: ./atomikos-log
@@ -112,7 +111,6 @@ spring:
 
 atomikos:
   properties:
-    service: application-tm
     max-timeout: 300000
     default-jta-timeout: 30000
     log-base-dir: ./atomikos-log
