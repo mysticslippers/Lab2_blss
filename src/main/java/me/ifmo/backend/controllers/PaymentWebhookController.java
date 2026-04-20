@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.ifmo.backend.DTO.payment.PaymentWebhookRequest;
 import me.ifmo.backend.exceptions.BusinessException;
-import me.ifmo.backend.services.PaymentCallbackService;
+import me.ifmo.backend.services.impl.PaymentTransactionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/payments/webhook")
 public class PaymentWebhookController {
 
-    private final PaymentCallbackService paymentCallbackService;
+    private final PaymentTransactionService paymentTransactionService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('PAYMENT_CALLBACK_HANDLE')")
@@ -22,8 +22,10 @@ public class PaymentWebhookController {
         String status = request.getStatus().trim().toUpperCase();
 
         switch (status) {
-            case "PAID" -> paymentCallbackService.markPaymentAsPaid(request.getProviderPaymentId());
-            case "FAILED" -> paymentCallbackService.markPaymentAsFailed(
+            case "PAID" -> paymentTransactionService.processPaidWebhook(
+                    request.getProviderPaymentId()
+            );
+            case "FAILED" -> paymentTransactionService.processFailedWebhook(
                     request.getProviderPaymentId(),
                     request.getFailureReason()
             );
