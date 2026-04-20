@@ -12,15 +12,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@Profile("!keycloak")
+@Profile("keycloak")
 @EnableMethodSecurity
 public class SecurityConfigKeycloak {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http,
-            KeycloakJwtAuthConverter keycloakJwtAuthConverter
-    ) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, KeycloakJwtAuthConverter keycloakJwtAuthConverter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
