@@ -23,17 +23,21 @@ spring:
       path: /api
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/studs
-    username: s368530
-    password: P7Woe7Cwyk2MjZnN
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      pool-name: app-hikari
-      maximum-pool-size: 10
-      minimum-idle: 2
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
+    xa:
+      data-source-class-name: org.postgresql.xa.PGXADataSource
+      unique-resource-name: application_database
+      min-pool-size: 2
+      max-pool-size: 10
+      borrow-connection-timeout: 30
+      max-idle-time: 60
+      maintenance-interval: 60
+      test-query: SELECT 1
+      properties:
+        user: s368530
+        password: P7Woe7Cwyk2MjZnN
+        serverName: localhost
+        portNumber: 5432
+        databaseName: studs
 
   jpa:
     open-in-view: false
@@ -45,6 +49,18 @@ spring:
         format_sql: true
         jdbc:
           time_zone: UTC
+        transaction:
+          coordinator_class: jta
+        jta:
+          platform: org.hibernate.engine.transaction.jta.platform.internal.AtomikosJtaPlatform
+
+atomikos:
+  properties:
+    service: application-tm
+    max-timeout: 300000
+    default-jta-timeout: 30000
+    log-base-dir: ./atomikos-log
+    enable-logging: true
 
 bank:
   base-url: http://localhost:1489
@@ -63,17 +79,21 @@ spring:
       path: /api
 
   datasource:
-    url: jdbc:postgresql://pg:5432/studs
-    username: s368530
-    password: P7Woe7Cwyk2MjZnN
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      pool-name: app-hikari
-      maximum-pool-size: 10
-      minimum-idle: 2
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
+    xa:
+      data-source-class-name: org.postgresql.xa.PGXADataSource
+      unique-resource-name: application_database
+      min-pool-size: 2
+      max-pool-size: 10
+      borrow-connection-timeout: 30
+      max-idle-time: 60
+      maintenance-interval: 60
+      test-query: SELECT 1
+      properties:
+        user: s368530
+        password: P7Woe7Cwyk2MjZnN
+        serverName: pg
+        portNumber: 5432
+        databaseName: studs
 
   jpa:
     open-in-view: false
@@ -85,6 +105,18 @@ spring:
         format_sql: true
         jdbc:
           time_zone: UTC
+        transaction:
+          coordinator_class: jta
+        jta:
+          platform: org.hibernate.engine.transaction.jta.platform.internal.AtomikosJtaPlatform
+
+atomikos:
+  properties:
+    service: application-tm
+    max-timeout: 300000
+    default-jta-timeout: 30000
+    log-base-dir: ./atomikos-log
+    enable-logging: true
 
 bank:
   base-url: http://localhost:1489
